@@ -1,0 +1,13 @@
+PixChecker
+
+
+Instalando dependências: 
+pip3 install -r .\requirements.txt
+Habilitar confirmação de PIX por e-mail no aplicativo Nubank
+
+- Colocar nome da loja em storename.txt
+- Habilitar GmailAPI na GoogleCloud
+- Criar credenciais de ID OAuth para Aplicativo de Computador
+- Setar escopo 'https://mail.google.com/' de permissões
+- Download do arquivo JSON e colocar na pasta credentials
+- Iniciar o aplicativo =D

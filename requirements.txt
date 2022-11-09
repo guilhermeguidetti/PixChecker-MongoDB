@@ -1,0 +1,13 @@
+beautifulsoup4==4.11.1
+darkdetect==0.7.1
+google_api_python_client==2.65.0
+google_auth_oauthlib==0.5.3
+html2text==2020.1.16
+httplib2==0.20.4
+Markdown==3.4.1
+playsound==1.2.2
+protobuf==4.21.8
+pymongo==4.3.2
+pyparsing==3.0.9
+typing_extensions==4.4.0
+PILLOW==9.3.0

@@ -5,7 +5,7 @@ import time
 from tkinter import CENTER, NO, ttk
 import tkinter
 from GmailHandler import get_message, get_service, search_message
-from MongoHandler import add_pix, check_license, return_pix, return_pix_daily, return_qtd_docs  
+from MongoHandler import add_pix, check_license, return_pix, return_pix_daily, return_pix_day_month, return_pix_month, return_qtd_docs  
 import customtkinter
 import html2text
 from bs4 import BeautifulSoup
@@ -13,7 +13,7 @@ import re
 import datetime 
 from playsound import playsound
 from tkinter import *
-from tkinter import font
+from tkinter import font, messagebox
 from PIL import ImageTk, Image 
 import time
 import sys
@@ -43,7 +43,9 @@ class App(customtkinter.CTk):
         self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
         menubar = tkinter.Menu(self)
         filemenu = tkinter.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Em construção")
+        filemenu.add_command(label="Todos", command= lambda: listAllPIX())
+        filemenu.add_command(label="Mensal", command= lambda: listMonthPIX())
+        filemenu.add_command(label="Dia e Mês", command= lambda: listDayMonthPIX())
         menubar.add_cascade(label="Filtrar", menu=filemenu)
         self.config(menu=menubar)
 
@@ -229,6 +231,106 @@ class App(customtkinter.CTk):
                 count += 1
             playsound('assets/shineupdate.mp3')
 
+        def login():
+            login = tkinter.Toplevel(self, pady=10,padx=90)
+            login.iconbitmap("assets/lock_pix.ico")
+            Label(login ,text = "Usuário").grid(row = 0,column = 0)
+            Label(login ,text = "Senha").grid(row = 1,column = 0)
+            user = Entry(login)
+            user.grid(row = 0,column = 1)
+            passwd = Entry(login, show='*')
+            passwd.grid(row = 1,column = 1)
+            def loginCorrect(event = None):
+                global autenticated
+                threading.Timer(300.0, expireLogin).start()
+                if (user.get().upper() == 'RENATA' and passwd.get() == '1213'):
+                    autenticated = True
+                if autenticated:
+                    autenticated = True
+                    login.destroy()
+                else:
+                    tkinter.messagebox.showerror(title='Tentativa de Login', message='Usuário ou senha está incorreto')
+                    user.delete(0, 'end')
+                    passwd.delete(0, 'end')
+            self.buttonUpdate = customtkinter.CTkButton(login,
+                                                text="Login",
+                                                command=loginCorrect)
+            self.buttonUpdate.grid(row=2, column=1, columnspan=1, pady=10, padx=5, sticky="e")
+
+        def listAllPIX():
+            if autenticated:
+                global count
+                if count > 0:
+                    count = 0
+                result = return_pix("pixchecker", storeName)
+                pixTable.delete(*pixTable.get_children())
+                pixTable.update()
+
+                for data in result:
+                    pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], data['dia'], data['mes'], data['valor']))
+                    count += 1
+                playsound('assets/shineupdate.mp3')
+            else:
+                login()
+
+        def listMonthPIX():
+            if autenticated:
+                getMonth = tkinter.Toplevel(self, pady=10,padx=90)
+                getMonth.iconbitmap("assets/unlock_pix.ico")
+                Label(getMonth ,text = "Número do Mês").grid(row = 0,column = 0)
+                mes = Entry(getMonth)
+                mes.grid(row = 0,column = 1)
+                self.buttonUpdate = customtkinter.CTkButton(getMonth,
+                                                    text="Buscar",
+                                                    command= lambda: [listMonthPIXCall(mes), getMonth.destroy()])
+                self.buttonUpdate.grid(row=2, column=1, columnspan=1, pady=10, padx=5, sticky="e")
+            else:
+                login()
+
+        def listMonthPIXCall(mes):
+            global count
+            if count > 0:
+                count = 0
+            result = return_pix_month("pixchecker", storeName, int(mes.get()))
+            pixTable.delete(*pixTable.get_children())
+            pixTable.update()
+
+            for data in result:
+                pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], data['dia'], data['mes'], data['valor']))
+                count += 1
+            playsound('assets/shineupdate.mp3')
+
+        def listDayMonthPIX():
+            if autenticated:
+                getDayMonth = tkinter.Toplevel(self, pady=10,padx=90)
+                getDayMonth.iconbitmap("assets/unlock_pix.ico")
+                Label(getDayMonth ,text = "Número do Dia").grid(row = 0,column = 0)
+                dia = Entry(getDayMonth)
+                dia.grid(row = 0,column = 1)
+                Label(getDayMonth ,text = "Número do Mês").grid(row = 1,column = 0)
+                mes = Entry(getDayMonth)
+                mes.grid(row = 1,column = 1)
+                self.buttonUpdate = customtkinter.CTkButton(getDayMonth,
+                                                    text="Buscar",
+                                                    command= lambda: [listDayMonthPIXCall(dia, mes), getDayMonth.destroy()])
+                self.buttonUpdate.grid(row=2, column=1, columnspan=1, pady=10, padx=5, sticky="e")
+            else:
+                login()
+
+        def listDayMonthPIXCall(dia, mes):
+            global count
+            if count > 0:
+                count = 0
+            result = return_pix_day_month("pixchecker", storeName, int(dia.get()), int(mes.get()))
+            pixTable.delete(*pixTable.get_children())
+            pixTable.update()
+
+            for data in result:
+                pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], data['dia'], data['mes'], data['valor']))
+                count += 1
+            playsound('assets/shineupdate.mp3')
+        
+
         def startThread():
             global runThread
             runThread = 1
@@ -237,7 +339,11 @@ class App(customtkinter.CTk):
         def stopThread():
             global runThread
             runThread = 0
-    
+
+        def expireLogin():
+            global autenticated
+            autenticated = False
+
         table_insert_daily()
         def change_mode():
             if self.switch_2.get() == 1: 
@@ -297,7 +403,7 @@ if __name__ == "__main__":
     label1.configure(font=("Game Of Squids", 24, "bold"))   #You need to install this font in your PC or try another one
     label1.place(x=80,y=90)
 
-    label2=Label(w, text='Validando licença...', fg='white', bg='#272727') #decorate it 
+    label2=Label(w, text='Validando licença...', fg='white', bg='#272727')
     label2.configure(font=("Calibri", 11))
     label2.place(x=10,y=215)
 

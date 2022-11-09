@@ -51,15 +51,10 @@ def check_license(db: Database, collection_name:str, value:str):
     except:
         logging.error("Erro ao verificar licença")
 
-def return_pix(db: Database, collection_name:str, fieldName:str, value:int):
+def return_pix(db: Database, collection_name:str):
     try:
         db = connect('guidetti', '13579', 'pixchecker')
-        filter={
-                fieldName: value
-        }
-        result = db[collection_name].find(
-            filter=filter
-        )
+        result = db[collection_name].find()
         return result
     except:
         logging.error("Erro ao tentar retornar todos os PIX")
@@ -78,6 +73,33 @@ def return_pix_daily(db: Database, collection_name:str, dia:int, mes:int, ano:in
         return result
     except:
         logging.error("Erro ao tentar retornar os PIXs do dia")
+
+def return_pix_month(db: Database, collection_name:str, mes:int):
+    try:
+        db = connect('guidetti', '13579', 'pixchecker')
+        filter={
+                "mes": mes
+        }
+        result = db[collection_name].find(
+            filter=filter
+        )
+        return result
+    except:
+        logging.error(f"Erro ao tentar retornar os PIXs do mes {mes}")
+
+def return_pix_day_month(db: Database, collection_name:str, dia:int, mes:int):
+    try:
+        db = connect('guidetti', '13579', 'pixchecker')
+        filter={
+                "dia": dia,
+                "mes": mes
+        }
+        result = db[collection_name].find(
+            filter=filter
+        )
+        return result
+    except:
+        logging.error(f"Erro ao tentar retornar os PIXs do dia {dia} e mes {mes}")
         
 
 def return_qtd_docs(db: Database, collection_name:str):

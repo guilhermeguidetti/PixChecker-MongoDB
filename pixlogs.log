@@ -1,0 +1,218 @@
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'pHYs' 41 9
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 62 1
+DEBUG:PIL.PngImagePlugin:STREAM b'gAMA' 75 4
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 91 149
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'pHYs' 41 9
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 62 1
+DEBUG:PIL.PngImagePlugin:STREAM b'gAMA' 75 4
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 91 132
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:google.auth.transport.requests:Making request: POST https://oauth2.googleapis.com/token
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): oauth2.googleapis.com:443
+DEBUG:urllib3.connectionpool:https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+INFO:googleapiclient.discovery_cache:file_cache is only supported with oauth2client<4.0.0
+DEBUG:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest
+DEBUG:googleapiclient.discovery:URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages?q=from%3Atodomundo%40nubank.com.br+recebeu+transfer%C3%AAncia+after%3A2022%2F11%2F9&alt=json
+INFO:googleapiclient.discovery_cache:file_cache is only supported with oauth2client<4.0.0
+DEBUG:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest
+DEBUG:googleapiclient.discovery:URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages?q=from%3Atodomundo%40nubank.com.br+recebeu+transfer%C3%AAncia+after%3A2022%2F11%2F9&alt=json
+INFO:googleapiclient.discovery_cache:file_cache is only supported with oauth2client<4.0.0
+DEBUG:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest
+DEBUG:googleapiclient.discovery:URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages?q=from%3Atodomundo%40nubank.com.br+recebeu+transfer%C3%AAncia+after%3A2022%2F11%2F9&alt=json
+INFO:googleapiclient.discovery_cache:file_cache is only supported with oauth2client<4.0.0
+DEBUG:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest
+DEBUG:googleapiclient.discovery:URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages?q=from%3Atodomundo%40nubank.com.br+recebeu+transfer%C3%AAncia+after%3A2022%2F11%2F9&alt=json
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'pHYs' 41 9
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 62 1
+DEBUG:PIL.PngImagePlugin:STREAM b'gAMA' 75 4
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 91 149
+DEBUG:PIL.PngImagePlugin:STREAM b'IHDR' 16 13
+DEBUG:PIL.PngImagePlugin:STREAM b'pHYs' 41 9
+DEBUG:PIL.PngImagePlugin:STREAM b'sRGB' 62 1
+DEBUG:PIL.PngImagePlugin:STREAM b'gAMA' 75 4
+DEBUG:PIL.PngImagePlugin:STREAM b'IDAT' 91 132
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): r3.o.lencr.org:80
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:urllib3.connectionpool:http://r3.o.lencr.org:80 "POST / HTTP/1.1" 200 503
+DEBUG:pymongo.ocsp_support:OCSP response status: <OCSPResponseStatus.SUCCESSFUL: 0>
+DEBUG:pymongo.ocsp_support:Verifying response
+DEBUG:pymongo.ocsp_support:Responder is issuer
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Caching OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+DEBUG:pymongo.ocsp_support:Peer did not staple an OCSP response
+DEBUG:pymongo.ocsp_support:Requesting OCSP data
+DEBUG:pymongo.ocsp_support:Trying http://r3.o.lencr.org
+DEBUG:pymongo.ocsp_support:Using cached OCSP response.
+DEBUG:pymongo.ocsp_support:OCSP cert status: <OCSPCertStatus.GOOD: 0>
+INFO:googleapiclient.discovery_cache:file_cache is only supported with oauth2client<4.0.0
+DEBUG:googleapiclient.discovery:URL being requested: GET https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest
+DEBUG:googleapiclient.discovery:URL being requested: GET https://gmail.googleapis.com/gmail/v1/users/me/messages?q=from%3Atodomundo%40nubank.com.br+recebeu+transfer%C3%AAncia+after%3A2022%2F11%2F9&alt=json

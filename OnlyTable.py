@@ -26,7 +26,6 @@ class App(customtkinter.CTk):
         super().__init__()
                 
         def getStoreName():
-            print("getStoreName() inicializada")
             with open('credentials/storename.txt') as f:
                 loja = f.readlines()
                 return loja[0]
@@ -101,12 +100,9 @@ class App(customtkinter.CTk):
             if (qtdPixAntiga != qtdPixNovo):
                 table_insert_daily()
                 qtdPixAntiga = qtdPixNovo
-            else:
-                print("Nada encontrado")
             threading.Timer(5.0, check_for_pix).start()
 
         def table_insert_daily():
-            print("table_insert_daily() inicializada")
             global count
             global firstInit
             if count > 0:
@@ -121,22 +117,16 @@ class App(customtkinter.CTk):
             return_qtd_docs("pixchecker", storeName)
 
         def startThread():
-            print('\n')
-            print("startThread() inicializada")
             global runThread
             runThread = 1
             check_for_pix()
 
         
         def stopThread():
-            print('\n')
-            print("stopThread() inicializada")
             global runThread
             runThread = 0
     
         def change_mode():
-            print('\n')
-            print("change_mode() inicializada")
             if self.switch_2.get() == 1: 
                 startThread()
             else:

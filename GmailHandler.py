@@ -7,12 +7,14 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from googleapiclient.errors import HttpError
+from google.auth.exceptions import RefreshError
 import base64
 import httplib2
 import os
 import datetime 
-
+import logging
 from pyparsing import col
+logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.DEBUG)
 
 SCOPES = ['https://mail.google.com/']
 
@@ -22,7 +24,6 @@ buscaMes = (current_time.month)
 buscaDia = (current_time.day)
 
 def get_message(service, user_id, msg_id):
-    print("get_message() inicializada")
     """
     Search the inbox for specific message by ID and return it back as a 
     clean string. String may contain Python escape characters for newline
@@ -63,15 +64,12 @@ def get_message(service, user_id, msg_id):
 
         else:
             return ""
-            print("\nMessage is not text or multipart, returned an empty string")
     # unsure why the usual exception doesn't work in this case, but 
     # having a standard Exception seems to do the trick
     except Exception:
-        print("An error occured in get_message")
+        logging.error("An error occured in get_message")
 
 def search_message(service, user_id, search_string):
-    print('\n')
-    print("search_message() inicializada")
     """
     Search the inbox for emails using standard gmail search parameters
     and return a list of email IDs for each result
@@ -103,11 +101,9 @@ def search_message(service, user_id, search_string):
             ids = search_ids['messages']
 
         except KeyError:
-            # print("WARNING: the search queried returned 0 results")
-            # print("returning an empty string")
             return ""
         except socket.timeout:
-            print('erro')
+            logging.error('Socket timed out')
 
         if len(ids)>0:
             for msg_id in ids:
@@ -119,11 +115,9 @@ def search_message(service, user_id, search_string):
             return list_ids 
         
     except (httplib2.error):
-        print("An error occured in search_message")
+        logging.error("An error occured in search_message")
 
 def get_service():
-    print('\n')
-    print("get_service() inicializada")
     """
     Authenticate the google api client and return the service object 
     to make further calls
@@ -143,7 +137,16 @@ def get_service():
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except RefreshError:
+                try: 
+                    if os.path.exists('tokens/token.json'):
+                        os.remove("tokens/token.json")
+                        exit()
+                except:
+                    logging.error("Token expirado")
+                    exit()
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 'credentials/credentials.json', SCOPES)
@@ -159,10 +162,9 @@ def get_service():
 
     except HttpError as error:
         # TODO(developer) - Handle errors from gmail API.
-        print(f'An error occurred: {error}')
+        logging.error(f'An error occurred: {error}')
         
 def delete_message(user_id, msg_id):
-    print("delete_message() inicializada")
     """Moves the message with the given msg_id to the trash folder.
     Args:
         user_id: User's email address. The special value "me"
@@ -177,20 +179,15 @@ def delete_message(user_id, msg_id):
         response = service.users().messages().trash(userId=user_id, id=msg_id).execute()
         return response
     except HttpError as error:
-        print('An error occurred: %s' % error)
+        logging.error('An error occurred: %s' % error)
         
 def deleteEmail():
-    print('\n')
-    print("deleteEmail() inicializada")
     for message in list_messages_matching_query('me', f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'):
-        print('Chamando delete_message dentro do deleteEmail()')
         delete = delete_message('me', message['id'])
-        print(delete)
+        logging.debug(delete)
     
     
 def list_messages_matching_query(user_id, search_string):
-    print('\n')
-    print("list_messages_matching_query() inicializada")
     try:
         service = get_service()
         response = service.users().messages().list(userId=user_id,
@@ -207,4 +204,4 @@ def list_messages_matching_query(user_id, search_string):
             for message in response['messages']:
                     yield message
     except HttpError as error:
-        print('An error occurred: %s' % error)
+        logging.error('An error occurred: %s' % error)

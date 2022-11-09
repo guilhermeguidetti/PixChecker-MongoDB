@@ -5,7 +5,7 @@ import time
 from tkinter import CENTER, NO, ttk
 import tkinter
 from GmailHandler import get_message, get_service, search_message
-from MongoHandler import add_pix, check_license, return_pix, return_qtd_docs  
+from MongoHandler import add_pix, check_license, return_pix, return_pix_daily, return_qtd_docs  
 import customtkinter
 import html2text
 from bs4 import BeautifulSoup
@@ -17,6 +17,9 @@ from tkinter import font
 from PIL import ImageTk, Image 
 import time
 import sys
+import logging
+logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.DEBUG)
+
 
 from customtkinter.windows.ctk_tk import CTk
 
@@ -103,9 +106,11 @@ class App(customtkinter.CTk):
         global buscaAno
         global buscaMes
         global buscaDia
+        global buscaMesInt
         current_time = datetime.datetime.now() 
         buscaAno = int(current_time.year)
         buscaMes = str(current_time.month)
+        buscaMesInt = datetime.date.today().month
         buscaDia = int(current_time.day)
 
         # ======== Funções =========
@@ -162,7 +167,8 @@ class App(customtkinter.CTk):
                 clean_soup.append(soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=', '').replace('E2', 'â'))
                 pixInfo = re.compile("").sub("", clean_soup[i]).split()
                 res.append(int(pixInfo[dia]))
-                res.append(pixInfo[mes])
+                mes = getMonthInt(pixInfo[mes])
+                res.append(mes)
                 allPix.append(res)
                 i += 1
             i = 0
@@ -177,24 +183,51 @@ class App(customtkinter.CTk):
                 if allPix[i][2] == "Ouvidoria":
                     allPix[i].pop(2)
                 i += 1
-
+            logging.debug(allPix)
             add_pix("pixchecker", storeName, allPix)
             table_insert_daily()
             
             return allPix
         
+        def getMonthInt(mes):
+            if mes == "JAN":
+                return 1
+            elif mes == "FEV":
+                return 2
+            elif mes == "MAR":
+                return 3
+            elif mes == "ABR":
+                return 4
+            elif mes == "MAI":
+                return 5
+            elif mes == "JUN":
+                return 6
+            elif mes == "JUL":
+                return 7
+            elif mes == "AGO":
+                return 8
+            elif mes == "SET":
+                return 9
+            elif mes == "OUT":
+                return 10
+            elif mes == "NOV":
+                return 11
+            elif mes == "DEZ":
+                return 12
+            else:
+                return 99
+            
         def table_insert_daily():
             global count
             if count > 0:
                 count = 0
-            result = return_pix("pixchecker", storeName, "dia", buscaDia)
+            result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMesInt, buscaAno)
             pixTable.delete(*pixTable.get_children())
             pixTable.update()
             for data in result:
                 pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], data['dia'], data['mes'], data['valor']))
                 count += 1
             playsound('assets/shineupdate.mp3')
-            w.destroy()
 
         def startThread():
             global runThread
@@ -303,12 +336,14 @@ if __name__ == "__main__":
     time.sleep(0.5)
     isValid = getLicense()
     if(isValid == True):
+        w.destroy()
         app = App()
         app.mainloop()
+        
     else:
         errorApp = customtkinter.CTk()
         errorApp.geometry("330x110")
-        errorApp.title("Erro na validação da licensa")
+        errorApp.title("Erro na validação da licença")
         w.destroy()
         errorApp.iconbitmap("assets/lock_pix.ico")
         def button_function():

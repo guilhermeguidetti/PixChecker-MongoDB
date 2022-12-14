@@ -108,11 +108,11 @@ class App(customtkinter.CTk):
         global buscaAno
         global buscaMes
         global buscaDia
-        global buscaMesInt
+        global buscaMesStr
         current_time = datetime.datetime.now() 
         buscaAno = int(current_time.year)
-        buscaMes = str(current_time.month)
-        buscaMesInt = datetime.date.today().month
+        buscaMes = int(current_time.month)
+        buscaMesStr = datetime.date.today().month
         buscaDia = int(current_time.day)
 
         # ======== Funções =========
@@ -169,7 +169,8 @@ class App(customtkinter.CTk):
                 clean_soup.append(soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=', '').replace('E2', 'â'))
                 pixInfo = re.compile("").sub("", clean_soup[i]).split()
                 res.append(int(pixInfo[dia]))
-                mes = getMonthInt(pixInfo[mes])
+                mes = pixInfo[mes]
+                print(f"173 - pixInfo[{mes}]")
                 res.append(mes)
                 allPix.append(res)
                 i += 1
@@ -191,39 +192,37 @@ class App(customtkinter.CTk):
             
             return allPix
         
-        def getMonthInt(mes):
-            if mes == "JAN":
-                return 1
-            elif mes == "FEV":
-                return 2
-            elif mes == "MAR":
-                return 3
-            elif mes == "ABR":
-                return 4
-            elif mes == "MAI":
-                return 5
-            elif mes == "JUN":
-                return 6
-            elif mes == "JUL":
-                return 7
-            elif mes == "AGO":
-                return 8
-            elif mes == "SET":
-                return 9
-            elif mes == "OUT":
-                return 10
-            elif mes == "NOV":
-                return 11
-            elif mes == "DEZ":
-                return 12
-            else:
-                return 99
+        def getMonthStr(mes):
+            if mes == 1:
+                return "JAN"
+            elif mes == 2:
+                return "FEV"
+            elif mes == 3:
+                return "MAR"
+            elif mes == 4:
+                return "ABR"
+            elif mes == 5:
+                return "MAI"
+            elif mes == 6:
+                return "JUN"
+            elif mes == 7:
+                return "JUL"
+            elif mes == 8:
+                return "AGO"
+            elif mes == 9:
+                return "SET"
+            elif mes == 10:
+                return "OUT"
+            elif mes == 11:
+                return "NOV"
+            elif mes == 12:
+                return "DEZ"
             
         def table_insert_daily():
             global count
             if count > 0:
                 count = 0
-            result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMesInt, buscaAno)
+            result = return_pix_daily("pixchecker", storeName, buscaDia, getMonthStr(buscaMes), buscaAno)
             pixTable.delete(*pixTable.get_children())
             pixTable.update()
             for data in result:
@@ -277,7 +276,7 @@ class App(customtkinter.CTk):
             if autenticated:
                 getMonth = tkinter.Toplevel(self, pady=10,padx=90)
                 getMonth.iconbitmap("assets/unlock_pix.ico")
-                Label(getMonth ,text = "Número do Mês").grid(row = 0,column = 0)
+                Label(getMonth ,text = "Abreviação do Mês (3 letras)").grid(row = 0,column = 0)
                 mes = Entry(getMonth)
                 mes.grid(row = 0,column = 1)
                 self.buttonUpdate = customtkinter.CTkButton(getMonth,
@@ -291,7 +290,7 @@ class App(customtkinter.CTk):
             global count
             if count > 0:
                 count = 0
-            result = return_pix_month("pixchecker", storeName, int(mes.get()))
+            result = return_pix_month("pixchecker", storeName, mes)
             pixTable.delete(*pixTable.get_children())
             pixTable.update()
 
@@ -321,7 +320,7 @@ class App(customtkinter.CTk):
             global count
             if count > 0:
                 count = 0
-            result = return_pix_day_month("pixchecker", storeName, int(dia.get()), int(mes.get()))
+            result = return_pix_day_month("pixchecker", storeName, int(dia.get()), mes)
             pixTable.delete(*pixTable.get_children())
             pixTable.update()
 

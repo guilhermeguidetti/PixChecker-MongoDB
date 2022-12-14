@@ -59,7 +59,7 @@ def return_pix(db: Database, collection_name:str):
     except:
         logging.error("Erro ao tentar retornar todos os PIX")
         
-def return_pix_daily(db: Database, collection_name:str, dia:int, mes:int, ano:int):
+def return_pix_daily(db: Database, collection_name:str, dia:int, mes:str, ano:int):
     try:
         db = connect('guidetti', '13579', 'pixchecker')
         filter={
@@ -74,7 +74,7 @@ def return_pix_daily(db: Database, collection_name:str, dia:int, mes:int, ano:in
     except:
         logging.error("Erro ao tentar retornar os PIXs do dia")
 
-def return_pix_month(db: Database, collection_name:str, mes:int):
+def return_pix_month(db: Database, collection_name:str, mes:str):
     try:
         db = connect('guidetti', '13579', 'pixchecker')
         filter={
@@ -87,7 +87,7 @@ def return_pix_month(db: Database, collection_name:str, mes:int):
     except:
         logging.error(f"Erro ao tentar retornar os PIXs do mes {mes}")
 
-def return_pix_day_month(db: Database, collection_name:str, dia:int, mes:int):
+def return_pix_day_month(db: Database, collection_name:str, dia:int, mes:str):
     try:
         db = connect('guidetti', '13579', 'pixchecker')
         filter={

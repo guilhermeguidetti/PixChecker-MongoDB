@@ -8,7 +8,7 @@ from datetime import datetime, date
 from bson.timestamp import Timestamp
 import logging
 from GmailHandler import deleteEmail
-logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
 
 class AlreadyInDB(Exception):
     """Raised when pix is already stored in DB"""

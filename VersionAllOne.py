@@ -18,7 +18,7 @@ from PIL import ImageTk, Image
 import time
 import sys
 import logging
-logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.ERROR)
 
 
 from customtkinter.windows.ctk_tk import CTk
@@ -186,7 +186,7 @@ class App(customtkinter.CTk):
                 if allPix[i][2] == "Ouvidoria":
                     allPix[i].pop(2)
                 i += 1
-            logging.debug(allPix)
+            logging.info("Pix adicionado: ", allPix)
             add_pix("pixchecker", storeName, allPix)
             table_insert_daily()
             
@@ -244,6 +244,9 @@ class App(customtkinter.CTk):
                 threading.Timer(300.0, expireLogin).start()
                 if (user.get().upper() == 'RENATA' and passwd.get() == '1213'):
                     autenticated = True
+                    data_e_hora_atuais = datetime.now()
+                    data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m/%Y %H:%M')
+                    logging.INFO("Login realizado em: ", data_e_hora_em_texto)
                 if autenticated:
                     autenticated = True
                     login.destroy()
@@ -251,6 +254,7 @@ class App(customtkinter.CTk):
                     tkinter.messagebox.showerror(title='Tentativa de Login', message='Usuário ou senha está incorreto')
                     user.delete(0, 'end')
                     passwd.delete(0, 'end')
+                    logging.INFO("Tentativa de login")
             self.buttonUpdate = customtkinter.CTkButton(login,
                                                 text="Login",
                                                 command=loginCorrect)

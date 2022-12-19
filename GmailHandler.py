@@ -14,7 +14,7 @@ import os
 import datetime 
 import logging
 from pyparsing import col
-logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
 
 SCOPES = ['https://mail.google.com/']
 
@@ -184,7 +184,6 @@ def delete_message(user_id, msg_id):
 def deleteEmail():
     for message in list_messages_matching_query('me', f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'):
         delete = delete_message('me', message['id'])
-        logging.debug(delete)
     
     
 def list_messages_matching_query(user_id, search_string):

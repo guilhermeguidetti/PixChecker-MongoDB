@@ -168,9 +168,8 @@ class App(customtkinter.CTk):
                 soup = BeautifulSoup(email[i], "html.parser")
                 clean_soup.append(soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=', '').replace('E2', 'â'))
                 pixInfo = re.compile("").sub("", clean_soup[i]).split()
-                res.append(int(pixInfo[dia]))
-                mes = pixInfo[mes]
-                print(f"173 - pixInfo[{mes}]")
+                res.append(int(pixInfo[14]))
+                mes = pixInfo[15]
                 res.append(mes)
                 allPix.append(res)
                 i += 1

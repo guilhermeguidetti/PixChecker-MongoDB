@@ -53,10 +53,12 @@ def get_message(service, user_id, msg_id):
         if content_type == 'multipart':
             # there will usually be 2 parts the first will be the body in text
             # the second will be the text in html
-            parts = mime_msg.get_payload()
+            parts = mime_msg.get_payload(decode=True) 
 
             # return the encoded text
             final_content = parts[1].get_payload()
+            with open ('pix.txt', 'w') as file:
+                file.write('\n' + final_content)  
             return final_content
 
         elif content_type == 'text':
@@ -145,7 +147,7 @@ def get_service():
                         os.remove("tokens/token.json")
                         exit()
                 except:
-                    logging.error("Token expirado")
+                    logging.info(f"{datetime.date} Token expirado")
                     exit()
         else:
             flow = InstalledAppFlow.from_client_secrets_file(

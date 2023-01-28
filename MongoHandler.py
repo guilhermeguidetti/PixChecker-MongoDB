@@ -120,12 +120,12 @@ def add_pix(db: Database, collection_name:str, allPix: list):
     i = 0
     try:
         for pix in allPix:
-            mydict = { "nome": allPix[i][0], "valor": allPix[i][1], "dia": allPix[i][2],  "mes": allPix[i][3], "ano": current_year, "horario": now}
+            mydict = { "nome": allPix[0], "valor": allPix[1], "dia": todays_date.day,  "mes": todays_date.month, "ano": current_year, "horario": now}
             filter={
-                'nome': allPix[i][0],
-                'valor':allPix[i][1],
-                'dia': allPix[i][2],
-                'mes':  allPix[i][3],
+                'nome': allPix[0],
+                'valor': allPix[1],
+                'dia': todays_date.day,
+                'mes': todays_date.month,
                 'ano': current_year
             }
 

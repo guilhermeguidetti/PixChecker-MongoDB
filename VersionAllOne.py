@@ -71,7 +71,7 @@ class App(customtkinter.CTk):
         pixTable['columns'] = ('pixID','pixNome', 'pixDia', 'pixMes', 'pixValor')
 
         pixTable.column("#0", width=0,  stretch=NO)
-        pixTable.column("pixID",anchor=CENTER, width=1)
+        pixTable.column("pixID",anchor=CENTER, width=50)
         pixTable.column("pixNome",anchor="w",width=160)
         pixTable.column("pixDia",anchor=CENTER,width=1)
         pixTable.column("pixMes",anchor=CENTER,width=10)
@@ -168,7 +168,7 @@ class App(customtkinter.CTk):
                 soup = BeautifulSoup(email[i], "html.parser")
                 clean_soup.append(soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=', '').replace('E2', 'â'))
                 pixInfo = re.compile("").sub("", clean_soup[i]).split()
-                res.append(int(pixInfo[14]))
+                res.append(pixInfo[14])
                 mes = pixInfo[15]
                 res.append(mes)
                 allPix.append(res)

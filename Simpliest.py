@@ -2,6 +2,7 @@
 from distutils.command.build_scripts import first_line_re
 import threading
 import time
+import os, signal
 from tkinter import CENTER, NO, ttk
 import tkinter
 from GmailHandler import get_message, get_service, search_message
@@ -40,7 +41,7 @@ class App(customtkinter.CTk):
         self.title(storeName)
         self.iconbitmap("assets/unlock_pix.ico")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
-        self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
+        #self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
         menubar = tkinter.Menu(self)
         filemenu = tkinter.Menu(menubar, tearoff=0)
         self.config(menu=menubar)
@@ -218,7 +219,23 @@ class App(customtkinter.CTk):
 
 
 if __name__ == "__main__":
+    def process(): 
+        try: 
+            for line in os.popen("ps ax | grep " + "Evidência Pix" + " | grep -v grep"):  
+                fields = line.split() 
+                pid = fields[0]  
+                os.kill(int(pid), signal.SIGKILL)  
+            print("Processo morto") 
+            
+        except: 
+            print("Erro") 
+    process() 
     global storeName
+    try: 
+        os.system('taskkill  -im Evidência Pix.exe -f')
+        os.system('taskkill /f /im Evidência Pix.exe')
+    except:
+        print("erro")
     def getStoreName():
         with open('credentials/storename.txt') as f:
             loja = f.readlines()

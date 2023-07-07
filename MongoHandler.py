@@ -72,7 +72,7 @@ def return_pix_daily(db: Database, collection_name:str, dia:int, mes:str, ano:in
         )
         return result
     except:
-        logging.error("Erro ao tentar retornar os PIXs do dia")
+        logging.error("Erro ao tentar retornar os PIXs do dia - " + datetime.now())
 
 def return_pix_month(db: Database, collection_name:str, mes:str):
     try:
@@ -99,7 +99,7 @@ def return_pix_day_month(db: Database, collection_name:str, dia:int, mes:str):
         )
         return result
     except:
-        logging.error(f"Erro ao tentar retornar os PIXs do dia {dia} e mes {mes}")
+        logging.error(f"Erro ao tentar retornar os PIXs do dia {dia} e mes {mes} - " + datetime.now())
         
 
 def return_qtd_docs(db: Database, collection_name:str):

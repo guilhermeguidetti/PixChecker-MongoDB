@@ -1,12 +1,10 @@
-# from curses import window
-from distutils.command.build_scripts import first_line_re
 import threading
 import time
 import os, signal
 from tkinter import CENTER, NO, ttk
 import tkinter
 from GmailHandler import get_message, get_service, search_message
-from MongoHandler import add_pix, check_license, return_pix, return_pix_daily, return_pix_day_month, return_pix_month, return_qtd_docs  
+from MongoHandler import add_pix, return_pix_daily
 import customtkinter
 import html2text
 from bs4 import BeautifulSoup
@@ -113,7 +111,6 @@ class App(customtkinter.CTk):
         def qtdEmailAt():
             global quantidadeEmailAtual
             if runThread == 1:
-                ('Buscando novos PIXs')
                 service = get_service()
                 list_ids = []
                 busca = f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'
@@ -123,10 +120,7 @@ class App(customtkinter.CTk):
                     quantidadeEmailAtual += 1
                 (f'Qtd Email: {quantidadeEmailAtual} qtdEmailAt()')
                 if quantidadeEmailAtual > 0:
-                    ('PIX RECEBIDO!')
                     todayPix()
-                else:
-                    ('NENHUM PIX ENCONTRADO')
                 
                 threading.Timer(5.0, qtdEmailAt).start()
 
@@ -151,14 +145,15 @@ class App(customtkinter.CTk):
                 email[0] = email[0].replace("\r\n", '').replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=', '').replace('E2', 'â').replace("=", '')
                 # PEGAR VALORES DO PIX
                 soup = BeautifulSoup(email[0], "html.parser")
-                clean_soup.append(soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=E2', 'â').replace('ED', 'í').replace('=', '').replace("O valor já está disponível na sua conta do Nubank\xa0Transferência recebida\xa0\xa0Olá, RenataVocê recebeu uma transferência pelo Pix de ", '').replace("e o valor já está disponível na sua conta do Nubank.Valor Recebido", '').replace('JAN às ', '').replace("Esta transferência foi feita pelo Pix e por isso o valor chegou de forma instantânea para você. Com o Pix você pode enviar e receber dinheiro de forma prática e segura, todos os dias e horários e sem nenhum custo.Ainda tem dúvidas de como o Pix funciona?A gente te conta tudo em nossa Central.Acesse a Central PixAbraços,Equipe NubankPor favor, pedimos que você não responda esse e-mail, pois se trata de uma mensagem automática e não E9 possível dar continuidade com seu atendimento por aqui.Caso ainda tenha dúvidas, acesse Me Ajuda diretamente no seu aplicativo.Para emergências ligue para 0800 591 2117. Atendimentos são realizados 24 horas, todos os dias pelo chat ou telefone.Não deseja receber mais nossos nossos emails? clique aqui para se descadastrar. .Nu Pagamentos S.A - Instituição de Pagamento 18.236.120/0001-58Rua Capote Valente, 39 - 05409-000- São Paulo - SP",'').replace("O valor já está disponível na sua conta do Nubank\xa0Transferência recebida\xa0\xa0Olá, RenataVocê recebeu uma transferência de", '').replace("JAN às ", '').replace('Abraços,Equipe NubankPor favor, pedimos que você não responda esse e-mail, pois se trata de uma mensagem automática e não E9 possível dar continuidade com seu atendimento por aqui.Caso ainda tenha dúvidas, acesse Me Ajuda diretamente no seu aplicativo.Para emergências ligue para 0800 591 2117. Atendimentos são realizados 24 horas, todos os dias pelo chat ou telefone.Não deseja receber mais nossos nossos emails? clique aqui para se descadastrar. .Nu Pagamentos S.A - Instituição de Pagamento 18.236.120/0001-58Rua Capote Valente, 39 - 05409-000- São Paulo - SP', '').replace('às', '').replace('JAN', '').replace('FEV', '').replace('MAR', '').replace('ABR', '').replace('MAI', '').replace('JUN', '').replace('JUL', '').replace('AGO', '').replace('SET', '').replace('OUT', '').replace('NOV', '').replace('DEZ', ''))
-                pixInfo = re.compile("").sub("", clean_soup[0]).split()
+                clean_soup.append(soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=E2', 'â').replace('ED', 'í').replace('=', '').replace('JAN às ', '').replace("JAN às ", '').replace('às', '').replace('JAN', '').replace('FEV', '').replace('MAR', '').replace('ABR', '').replace('MAI', '').replace('JUN', '').replace('JUL', '').replace('AGO', '').replace('SET', '').replace('OUT', '').replace('NOV', '').replace('DEZ', ''))
+                clean_soup_string = clean_soup[0]
+                nomesobrenome = re.search(r"recebeu uma transferência de (.+?) R\$", clean_soup_string).group(1)
+                valor = re.search(r"R\$ (\d+,\d{2})", clean_soup_string).group(1)
+                pixInfo = re.compile("").sub("", clean_soup_string[0]).split()
                 pixInfo.pop()
                 lengthDia = len(str(buscaDia))
                 if(len(str(buscaDia)) < 10):
                     lengthDia = 2
-                valor = pixInfo[-1][:-lengthDia]
-                nomesobrenome = pixInfo[0].upper() + " " + pixInfo[1].upper()
                 allPix.append(nomesobrenome)
                 allPix.append(valor)
                 add_pix("pixchecker", storeName, allPix)
@@ -219,23 +214,8 @@ class App(customtkinter.CTk):
 
 
 if __name__ == "__main__":
-    def process(): 
-        try: 
-            for line in os.popen("ps ax | grep " + "Evidência Pix" + " | grep -v grep"):  
-                fields = line.split() 
-                pid = fields[0]  
-                os.kill(int(pid), signal.SIGKILL)  
-            print("Processo morto") 
-            
-        except: 
-            print("Erro") 
-    process() 
     global storeName
-    try: 
-        os.system('taskkill  -im Evidência Pix.exe -f')
-        os.system('taskkill /f /im Evidência Pix.exe')
-    except:
-        print("erro")
+    
     def getStoreName():
         with open('credentials/storename.txt') as f:
             loja = f.readlines()

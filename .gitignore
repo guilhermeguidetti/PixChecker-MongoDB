@@ -1,1 +1,8 @@
 output/
+credentials/credentials.json
+credentials/license.txt
+credentials/storename.txt
+credentials/license.txt
+credentials/storename.txt
+pixlogs.log
+tokens/token.json

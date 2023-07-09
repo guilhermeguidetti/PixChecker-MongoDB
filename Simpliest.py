@@ -51,7 +51,7 @@ class App(customtkinter.CTk):
         # Definir o estilo personalizado para o cabeçalho e os itens da tabela
         style = ttk.Style()
         style.configure('Custom.Treeview.Heading', font=('Courier New', 16, 'bold'))
-        style.configure('Custom.Treeview', font=('Arial', 12))
+        style.configure('Custom.Treeview', font=('Courier New', 12))
 
         pixTable['columns'] = ('pixID', 'pixNome', 'pixValor')
 
@@ -147,7 +147,7 @@ class App(customtkinter.CTk):
                 clean_soup.append(soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=E2', 'â').replace('ED', 'í').replace('=', '').replace('JAN às ', '').replace("JAN às ", '').replace('às', '').replace('JAN', '').replace('FEV', '').replace('MAR', '').replace('ABR', '').replace('MAI', '').replace('JUN', '').replace('JUL', '').replace('AGO', '').replace('SET', '').replace('OUT', '').replace('NOV', '').replace('DEZ', ''))
                 clean_soup_string = clean_soup[0]
                 match = re.search(r"recebeu uma transferência de (.+?) e o valor|recebeu uma transferência pelo Pix de (.+?) e o valor", clean_soup_string)
-                nomesobrenome = match.group(1) if match and match.group(1) else match.group(2) if match and match.group(2) else 'VER NO APP'
+                nomesobrenome = match.group(1).title() if match and match.group(1) else match.group(2).title() if match and match.group(2) else 'VER NO APP'
                 print(nomesobrenome)
                 match2 = re.search(r"R\$ (\d+,\d{2})|R\$ (\d{1,3}(?:\.\d{3})*(?:,\d{2}))", clean_soup_string)
                 print(clean_soup_string)

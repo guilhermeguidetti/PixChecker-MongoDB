@@ -1,6 +1,4 @@
 import socket
-import os
-import psutil
 from tkinter import messagebox
 from Simpliest import PixCheckerApp
 

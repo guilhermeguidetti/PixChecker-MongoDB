@@ -1,40 +1,36 @@
-import datetime
-import logging
-import os
-import re
-import sys
-from tkinter import CENTER, NO, ttk, messagebox
+import socket
+import threading
+from tkinter import CENTER, NO, messagebox, ttk
 import tkinter
-from PIL import ImageTk, Image
-from bs4 import BeautifulSoup
-from playsound import playsound
-from customtkinter.windows.ctk_tk import CTk
-import customtkinter
-import html2text
 from GmailHandler import get_message, get_service, search_message
 from MongoHandler import add_pix, return_pix_daily
-
+import customtkinter
+import html2text
+from bs4 import BeautifulSoup
+import re
+import datetime 
+from playsound import playsound
+from tkinter import *
+import logging
 logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
 
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-
-class PixCheckerApp(customtkinter.CTk):
+class App(customtkinter.CTk):
 
     WIDTH = 780
-    HEIGHT = 360
+    HEIGHT = 330
 
-    def __init__(self, storeName):
+    def __init__(self):
         super().__init__()
-
+                
         self.title(storeName)
         self.iconbitmap("assets/unlock_pix.ico")
-        self.geometry(f"{PixCheckerApp.WIDTH}x{PixCheckerApp.HEIGHT}")
+        self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
+        #self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
         menubar = tkinter.Menu(self)
-        filemenu = tkinter.Menu(menubar, tearoff=0)
         self.config(menu=menubar)
-
 
         # ============ create two frames ============
 
@@ -42,19 +38,21 @@ class PixCheckerApp(customtkinter.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+
         self.frame_right = customtkinter.CTkFrame(master=self)
         self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
         # ============ frame_right ============
+        self.frame_right = customtkinter.CTkFrame(master=self)
+        self.frame_right.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
 
-        # configure grid layout (3x7)
-        self.frame_right.rowconfigure((0, 1, 2, 3, 4), weight=1)
-        self.frame_right.rowconfigure(7, weight=20)
-        self.frame_right.columnconfigure((0, 1, 2), weight=1)
-        self.frame_right.columnconfigure(2, weight=0)
+        pixTable = ttk.Treeview(self.frame_right, style='Custom.Treeview')
 
-        # ============ frame_right ============
-        pixTable = ttk.Treeview(self)
+        # Definir o estilo personalizado para o cabeçalho e os itens da tabela
+        style = ttk.Style()
+        style.configure('Custom.Treeview.Heading', font=('Courier New', 16, 'bold'))
+        style.configure('Custom.Treeview', font=('Arial', 12))
+
         pixTable['columns'] = ('pixID', 'pixNome', 'pixValor')
 
         pixTable.column("#0", width=5, stretch=NO)
@@ -66,94 +64,168 @@ class PixCheckerApp(customtkinter.CTk):
         pixTable.heading("pixID", text="ID", anchor=CENTER)
         pixTable.heading("pixNome", text="Nome", anchor=CENTER)
         pixTable.heading("pixValor", text="Valor", anchor=CENTER)
-        pixTable.grid(column=1, row=0, sticky="nwe", padx=35, pady=35)
 
-        self.bind('<Escape>', lambda e: close_application())
+        # Aplicar o estilo personalizado ao cabeçalho e aos itens da tabela
+        pixTable.tag_configure('Custom.Treeview.Heading', font=('Courier New', 16, 'bold'))
+        pixTable.tag_configure('Custom.Treeview', font=('Courier New', 10))
+
+        pixTable.grid(column=0, row=0, sticky="nsew")
+
+
+        self.frame_right.grid_rowconfigure(0, weight=1)
+        self.frame_right.grid_columnconfigure(0, weight=1)
+
+
+
+        self.bind('<Escape>', lambda e: self.destroy())
 
         # ============ Inicializando variáveis ===========
-
-        self.quantidadeEmailAtual = 0
-        self.runThread = 1
-        self.autenticated = False
-        self.count = 0
-        self.firstInit = 1
-
-        current_time = datetime.datetime.now()
-        self.buscaAno = int(current_time.year)
-        self.buscaMes = int(current_time.month)
-        self.buscaMesStr = datetime.date.today().month
-        self.buscaDia = int(current_time.day)
+        
+        global quantidadeEmailAtual
+        quantidadeEmailAtual = 0
+        
+        global runThread
+        runThread = 1
+        
+        global autenticated
+        autenticated = False
+        
+        global count
+        count = 0
+        
+        global firstInit
+        firstInit = 1
+        threading.Timer.daemon = True
+        
+        global buscaAno
+        global buscaMes
+        global buscaDia
+        global buscaMesStr
+        current_time = datetime.datetime.now() 
+        buscaAno = int(current_time.year)
+        buscaMes = int(current_time.month)
+        buscaMesStr = datetime.date.today().month
+        buscaDia = int(current_time.day)
 
         # ======== Funções =========
 
         def qtdEmailAt():
-            if self.runThread == 1:
+            global quantidadeEmailAtual
+            if runThread == 1:
                 service = get_service()
                 list_ids = []
-                busca = f'from:todomundo@nubank.com.br recebeu transferência after:{self.buscaAno}/{self.buscaMes}/{self.buscaDia}'
+                busca = f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'
                 list_ids = search_message(service, 'me', busca)
-                self.quantidadeEmailAtual = len(list_ids)
-                if self.quantidadeEmailAtual > 0:
-                    todayPix() 
-
-                self.after(5000, qtdEmailAt)
+                quantidadeEmailAtual = 0
+                for ids in list_ids:
+                    quantidadeEmailAtual += 1
+                (f'Qtd Email: {quantidadeEmailAtual} qtdEmailAt()')
+                if quantidadeEmailAtual > 0:
+                    todayPix()
+                
+                threading.Timer(5.0, qtdEmailAt).start()
 
         def todayPix():
+            i = 0
+            email = []
+            soup = []
+            clean_soup = []
+            h = html2text.HTML2Text()
+            h.ignore_links = True
+            list_ids = []
             service = get_service()
-            busca = f'from:todomundo@nubank.com.br recebeu transferência after:{self.buscaAno}/{self.buscaMes}/{self.buscaDia}'
+            busca = f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'
             list_ids = search_message(service, 'me', busca)
 
+        
+            nomesobrenome=[]
             for ids in list_ids:
-                email = get_message(service, 'me', ids)
-                soup = BeautifulSoup(email, "html.parser")
-                clean_soup_string = soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=E2', 'â').replace('ED', 'í').replace('=', '').replace('JAN às ', '').replace("JAN às ", '').replace('às', '').replace('JAN', '').replace('FEV', '').replace('MAR', '').replace('ABR', '').replace('MAI', '').replace('JUN', '').replace('JUL', '').replace('AGO', '').replace('SET', '').replace('OUT', '').replace('NOV', '').replace('DEZ', '')
-
-                match = re.search(r"recebeu uma transferência de (.+?) R\$|recebeu uma transferência pelo Pix de (.+?) e o valor", clean_soup_string)
+                email.append(get_message(service, 'me', list_ids[i]))
+                email[0] = email[0].replace("\r\n", '').replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=', '').replace('E2', 'â').replace("=", '')
+                # PEGAR VALORES DO PIX
+                soup = BeautifulSoup(email[0], "html.parser")
+                clean_soup.append(soup.text.replace('=FA', 'ú').replace('=E7', 'ç').replace('=E3', 'ã').replace('=EA', 'ê').replace('=E1', 'á').replace('=E0', 'à').replace('=E2', 'â').replace('ED', 'í').replace('=', '').replace('JAN às ', '').replace("JAN às ", '').replace('às', '').replace('JAN', '').replace('FEV', '').replace('MAR', '').replace('ABR', '').replace('MAI', '').replace('JUN', '').replace('JUL', '').replace('AGO', '').replace('SET', '').replace('OUT', '').replace('NOV', '').replace('DEZ', ''))
+                clean_soup_string = clean_soup[0]
+                match = re.search(r"recebeu uma transferência de (.+?) e o valor|recebeu uma transferência pelo Pix de (.+?) e o valor", clean_soup_string)
                 nomesobrenome = match.group(1) if match and match.group(1) else match.group(2) if match and match.group(2) else 'VER NO APP'
-
+                print(nomesobrenome)
                 match2 = re.search(r"R\$ (\d+,\d{2})|R\$ (\d{1,3}(?:\.\d{3})*(?:,\d{2}))", clean_soup_string)
+                print(clean_soup_string)
                 valor = match2.group(1) if match2 and match2.group(1) else match2.group(2) if match2 and match2.group(2) else 'VER NO APP'
-
+                print(valor)
+                if(len(str(buscaDia)) < 10):
+                    lengthDia = 2
                 add_pix("pixchecker", storeName, [nomesobrenome, valor])
-
+                pixadd = f"Pix adicionado {[nomesobrenome, valor]}"
+                logging.info(pixadd)
+                clean_soup.clear()
+                email.clear()
+                i += 1
+            i = 0
             table_insert_daily()
-            self.state('zoomed')  # Maximizar a janela
-
+        
         def table_insert_daily():
-            self.count = 0
-            result = return_pix_daily("pixchecker", storeName, self.buscaDia, self.buscaMes, self.buscaAno)
+            global count
+            if count > 0:
+                count = 0
+            result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno)
             pixTable.delete(*pixTable.get_children())
             pixTable.update()
+            total_valor = 0.0
             for data in result:
-                self.count += 1
-                pixTable.insert(parent='', index='end', iid=f'{self.count + 1}', values=(self.count, data['nome'], data['valor']))
+                pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], f'R$ {data["valor"]}'))
+                count += 1
+                valor = float(data['valor'].replace('.', '').replace(',', '.')) # Converte o valor para float removendo os pontos de separação de milhar e substituindo a vírgula por ponto
+                total_valor += valor
+
+            # Após o loop, exiba o valor total ao lado do botão "Fechar"
+            valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")
+            valor_total_label.configure(font=('Courier New', 16, 'bold'))
+            valor_total_label.grid(row=8, column=0, pady=10, padx=20)
             playsound('assets/shineupdate.mp3')
 
-        def startThread():
-            self.runThread = 1
-            qtdEmailAt()
+        
 
+        def startThread():
+            global runThread
+            runThread = 1
+            qtdEmailAt()
+        
         def stopThread():
-            self.runThread = 0
+            global runThread
+            runThread = 0
 
         table_insert_daily()
-
         def change_mode():
-            if self.switch_2.get() == 1:
+            if self.switch_2.get() == 1: 
                 startThread()
             else:
                 stopThread()
 
-        def close_application():
-            self.destroy()
 
-        self.switch_2 = customtkinter.CTkSwitch(master=self.frame_right,
+        self.switch_2 = customtkinter.CTkSwitch(master=self.frame_right, 
                                                 text="",
                                                 command=change_mode)
         self.switch_2.grid(row=8, column=0, pady=10, padx=20, sticky="w")
         self.switch_2.toggle()
 
-        self.buttonClear = customtkinter.CTkButton(master=self.frame_right,
-                                                   text="Fechar",
-                                                   command=close_application)
-        self.buttonClear.grid(row=8, column=1, pady=20, padx=10, sticky="e")
+
+def check_internet_connection():
+    try:
+        socket.create_connection(("www.google.com", 80))
+        return True
+    except OSError:
+        return False
+    
+if __name__ == "__main__":
+    if check_internet_connection(): 
+        global storeName
+        def getStoreName():
+            with open('credentials/storename.txt') as f:
+                loja = f.readlines()
+                return loja[0]
+        storeName = getStoreName()
+        app = App()
+        app.mainloop()
+    else:
+        messagebox.showerror("Erro de conexão", "Não foi possível conectar à Internet. Verifique sua conexão e tente novamente.")

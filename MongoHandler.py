@@ -1,11 +1,8 @@
-from cgitb import reset
-from operator import eq
 from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
 from pymongo.errors import CollectionInvalid
 from datetime import datetime, date
-from bson.timestamp import Timestamp
 import logging
 from GmailHandler import deleteEmail
 logging.basicConfig(filename='pixlogs.log', encoding='utf-8')

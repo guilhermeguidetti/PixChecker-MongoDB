@@ -1,7 +1,9 @@
 import email
+from email.mime.text import MIMEText
 import os.path
 import socket
 import tkinter
+from tkinter import messagebox
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.oauth2.credentials import Credentials
@@ -13,7 +15,7 @@ import httplib2
 import os
 import datetime 
 import logging
-from pyparsing import col
+
 logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
 
 SCOPES = ['https://mail.google.com/']
@@ -22,6 +24,27 @@ current_time = datetime.datetime.now()
 buscaAno = (current_time.year)
 buscaMes = (current_time.month)
 buscaDia = (current_time.day)
+
+def create_message(sender, to, subject, message_text):
+    message = MIMEText(message_text)
+    message['to'] = to
+    message['from'] = sender
+    message['subject'] = subject
+    message['X-Priority'] = '1'
+    message['X-MSMail-Priority'] = 'High'
+    message['Importance'] = 'high'
+    return {'raw': base64.urlsafe_b64encode(message.as_string().encode()).decode()}
+
+
+def send_message(service, user_id, message):
+    try:
+        message = (service.users().messages().send(userId=user_id, body=message)
+                   .execute())
+        messagebox.showinfo("E-mail enviado", "O valor total foi enviado por e-mail.")
+        return message
+    except Exception as error:
+        messagebox.showerror("Erro ao enviar e-mail", str(error))
+
 
 def get_message(service, user_id, msg_id):
     """

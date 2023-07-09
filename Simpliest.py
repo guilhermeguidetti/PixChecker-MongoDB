@@ -2,7 +2,7 @@ import socket
 import threading
 from tkinter import CENTER, NO, messagebox, ttk
 import tkinter
-from GmailHandler import get_message, get_service, search_message
+from GmailHandler import create_message, get_message, get_service, search_message, send_message
 from MongoHandler import add_pix, return_pix_daily
 import customtkinter
 import html2text
@@ -166,6 +166,7 @@ class App(customtkinter.CTk):
         
         def table_insert_daily():
             global count
+            global total_valor
             if count > 0:
                 count = 0
             result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno)
@@ -202,12 +203,23 @@ class App(customtkinter.CTk):
             else:
                 stopThread()
 
-
         self.switch_2 = customtkinter.CTkSwitch(master=self.frame_right, 
                                                 text="",
                                                 command=change_mode)
         self.switch_2.grid(row=8, column=0, pady=10, padx=20, sticky="w")
         self.switch_2.toggle()
+
+        def send_email():
+            body = f'O valor total de PIXs recebido hoje foi de: R$ {total_valor:.2f}\n\nDetalhes dos PIXs:\n'
+            for data in return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno):
+                nome = data['nome']
+                valor = data['valor']
+                body += f'Nome: {nome}\nValor: R$ {valor}\n\n'
+            message = create_message('me', 'gzguidetti@gmail.com', f'PIX {buscaDia}/{buscaMes}/{buscaAno}', body)
+            send_message(service=get_service(), user_id='me', message=message)
+
+        send_email_button = customtkinter.CTkButton(master=self.frame_right, text="Enviar por e-mail", command=send_email)
+        send_email_button.grid(row=8, column=0, pady=10, padx=20, sticky="e")
 
 
 def check_internet_connection():

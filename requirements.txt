@@ -11,3 +11,7 @@ pymongo==4.3.2
 pyparsing==3.0.9
 typing_extensions==4.4.0
 PILLOW==9.3.0
+flock
+python-daemon
+pwd
+psutil

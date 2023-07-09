@@ -148,11 +148,8 @@ class App(customtkinter.CTk):
                 clean_soup_string = clean_soup[0]
                 match = re.search(r"recebeu uma transferência de (.+?) e o valor|recebeu uma transferência pelo Pix de (.+?) e o valor", clean_soup_string)
                 nomesobrenome = match.group(1).title() if match and match.group(1) else match.group(2).title() if match and match.group(2) else 'VER NO APP'
-                print(nomesobrenome)
                 match2 = re.search(r"R\$ (\d+,\d{2})|R\$ (\d{1,3}(?:\.\d{3})*(?:,\d{2}))", clean_soup_string)
-                print(clean_soup_string)
                 valor = match2.group(1) if match2 and match2.group(1) else match2.group(2) if match2 and match2.group(2) else 'VER NO APP'
-                print(valor)
                 if(len(str(buscaDia)) < 10):
                     lengthDia = 2
                 add_pix("pixchecker", storeName, [nomesobrenome, valor])
@@ -173,11 +170,12 @@ class App(customtkinter.CTk):
             pixTable.delete(*pixTable.get_children())
             pixTable.update()
             total_valor = 0.0
-            for data in result:
-                pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], f'R$ {data["valor"]}'))
-                count += 1
-                valor = float(data['valor'].replace('.', '').replace(',', '.')) # Converte o valor para float removendo os pontos de separação de milhar e substituindo a vírgula por ponto
-                total_valor += valor
+            if result:
+                for data in result:
+                    pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], f'R$ {data["valor"]}'))
+                    count += 1
+                    valor = float(data['valor'].replace('.', '').replace(',', '.')) # Converte o valor para float removendo os pontos de separação de milhar e substituindo a vírgula por ponto
+                    total_valor += valor
 
             # Após o loop, exiba o valor total ao lado do botão "Fechar"
             valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")

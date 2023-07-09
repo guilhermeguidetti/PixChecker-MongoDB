@@ -4,4 +4,5 @@ credentials/credentials.json
 credentials/license.txt
 credentials/storename.txt
 pixlogs.log
-
+config.json
+__pycache__/

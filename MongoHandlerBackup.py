@@ -5,26 +5,17 @@ from pymongo.errors import CollectionInvalid
 from datetime import datetime, date
 import logging
 from GmailHandler import deleteEmail
-import json
 logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
-file_path = 'config.json'
 
 class AlreadyInDB(Exception):
     """Raised when pix is already stored in DB"""
     pass
 
-def read_config(file_path):
-    with open(file_path, 'r') as file:
-        config = json.load(file)
-    return config
-
-config = read_config('config.json')
-
 def connect(
-    username: str(config['username']),
-    password: str(config['password']),
-    database: str(config['database']),
-    cluster= config['cluster']) -> Database:
+    username: str,
+    password: str,
+    database: str,
+    cluster='cluster0.zxxxxxz.mongodb.net') -> Database:
     client = MongoClient(f'mongodb+srv://{username}:{password}@{cluster}/?retryWrites=true&w=majority')
     return client[database]
 
@@ -36,25 +27,30 @@ def create_collection(db: Database, collection_name:str) -> Collection:
 
 def drop_collection(db: Database, collection_name:str) -> dict:
     try: 
-        db = connect(config['username'], config['password'], 'licenses')
         return db.drop_collection(collection_name)
     except CollectionInvalid:
         logging.error(f"A coleção {collection_name} não existe, portanto não foi excluída.")
         
 def check_license(db: Database, collection_name:str, value:str):
     try:
-        db = connect(config['username'], config['password'], 'pixchecker')
-        result = list(db[collection_name].find({"key": value}))
-        if len(result) > 0:
+        db = connect('username', 'password', 'licenses')
+        filter={
+                "key": value
+        }
+        result = list(db[collection_name].find(
+            filter=filter
+        ))
+        if (len(result) > 0):
             return True
         else:
             return False
+
     except:
         logging.error("Erro ao verificar licença")
 
 def return_pix(db: Database, collection_name:str):
     try:
-        db = connect(config['username'], config['password'], 'pixchecker')
+        db = connect('username', 'password', 'pixchecker')
         result = db[collection_name].find()
         return result
     except:
@@ -62,44 +58,50 @@ def return_pix(db: Database, collection_name:str):
         
 def return_pix_daily(db: Database, collection_name:str, dia:int, mes:str, ano:int):
     try:
-        db = connect(config['username'], config['password'], 'pixchecker')
+        db = connect('username', 'password', 'pixchecker')
         filter={
-            "dia": dia,
-            "mes": mes,
-            "ano": ano
+                "dia": dia,
+                "mes": mes,
+                "ano": ano
         }
-        result = db[collection_name].find(filter=filter)
+        result = db[collection_name].find(
+            filter=filter
+        )
         return result
     except:
-        logging.error("Erro ao tentar retornar os PIXs do dia - " + str(datetime.now()))
+        logging.error("Erro ao tentar retornar os PIXs do dia - " + datetime.now())
 
 def return_pix_month(db: Database, collection_name:str, mes:str):
     try:
-        db = connect(config['username'], config['password'], 'pixchecker')
+        db = connect('username', 'password', 'pixchecker')
         filter={
-            "mes": mes
+                "mes": mes
         }
-        result = db[collection_name].find(filter=filter)
+        result = db[collection_name].find(
+            filter=filter
+        )
         return result
     except:
         logging.error(f"Erro ao tentar retornar os PIXs do mes {mes}")
 
 def return_pix_day_month(db: Database, collection_name:str, dia:int, mes:str):
     try:
-        db = connect(config['username'], config['password'], 'pixchecker')
+        db = connect('username', 'password', 'pixchecker')
         filter={
-            "dia": dia,
-            "mes": mes
+                "dia": dia,
+                "mes": mes
         }
-        result = db[collection_name].find(filter=filter)
+        result = db[collection_name].find(
+            filter=filter
+        )
         return result
     except:
-        logging.error(f"Erro ao tentar retornar os PIXs do dia {dia} e mes {mes} - " + str(datetime.now()))
+        logging.error(f"Erro ao tentar retornar os PIXs do dia {dia} e mes {mes} - " + datetime.now())
         
 
 def return_qtd_docs(db: Database, collection_name:str):
     try:
-        db = connect(config['username'], config['password'], 'pixchecker')
+        db = connect('username', 'password', 'pixchecker')
         result = list(db[collection_name].find())
         qtd = len(result)
     except:
@@ -107,7 +109,7 @@ def return_qtd_docs(db: Database, collection_name:str):
     return qtd
 
 def add_pix(db: Database, collection_name:str, allPix: list):
-    db = connect(config['username'], config['password'], 'pixchecker')
+    db = connect('username', 'password', 'pixchecker')
     coll = db[collection_name]
     now = datetime.now()
     todays_date = date.today()
@@ -124,7 +126,9 @@ def add_pix(db: Database, collection_name:str, allPix: list):
                 'ano': current_year
             }
 
-            result = list(db[collection_name].find(filter=filter))
+            result = list(db[collection_name].find(
+            filter=filter
+            ))
             if result:
                 raise AlreadyInDB
             try:

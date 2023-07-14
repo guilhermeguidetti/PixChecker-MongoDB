@@ -11,15 +11,11 @@ import re
 import datetime 
 from playsound import playsound
 import logging
-<<<<<<< Updated upstream
-logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
-=======
 import pystray
 from PIL import Image
 import pygetwindow as gw
 
 logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.WARNING)
->>>>>>> Stashed changes
 
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -35,11 +31,7 @@ class App(customtkinter.CTk):
         self.title(storeName)
         self.iconbitmap("assets/unlock_pix.ico")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
-<<<<<<< Updated upstream
-        #self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
-=======
         self.protocol("WM_DELETE_WINDOW", self.on_closing) # Intercepta o evento de fechar a janela
->>>>>>> Stashed changes
         menubar = tkinter.Menu(self)
         self.config(menu=menubar)
 
@@ -188,13 +180,6 @@ class App(customtkinter.CTk):
                     valor = float(data['valor'].replace('.', '').replace(',', '.')) # Converte o valor para float removendo os pontos de separação de milhar e substituindo a vírgula por ponto
                     total_valor += valor
 
-<<<<<<< Updated upstream
-            # Após o loop, exiba o valor total ao lado do botão "Fechar"
-            valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")
-            valor_total_label.configure(font=('Courier New', 16, 'bold'))
-            valor_total_label.grid(row=8, column=0, pady=10, padx=20)
-            playsound('assets/shineupdate.mp3')
-=======
                 # Após o loop, exiba o valor total ao lado do botão "Fechar"
                 valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")
                 valor_total_label.configure(font=('Courier New', 16, 'bold'))
@@ -203,11 +188,6 @@ class App(customtkinter.CTk):
 
                 # Abrir a janela quando a função for chamada
                 self.deiconify()
-
-            except Exception as e:
-                messagebox.showerror("Erro na atualização", "Erro ao tentar retornar os PIXs do dia.\nContate o Administrador")
-                exit()
->>>>>>> Stashed changes
 
         def startThread():
             global runThread

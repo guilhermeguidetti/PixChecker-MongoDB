@@ -12,7 +12,7 @@ import datetime
 from playsound import playsound
 from tkinter import *
 import logging
-logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
+logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.WARNING)
 
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -24,11 +24,11 @@ class App(customtkinter.CTk):
 
     def __init__(self):
         super().__init__()
-                
+
         self.title(storeName)
         self.iconbitmap("assets/unlock_pix.ico")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
-        #self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
+        # self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
         menubar = tkinter.Menu(self)
         self.config(menu=menubar)
 
@@ -109,21 +109,28 @@ class App(customtkinter.CTk):
 
         # ======== Funções =========
 
+
         def qtdEmailAt():
             global quantidadeEmailAtual
-            if runThread == 1:
-                service = get_service()
-                list_ids = []
-                busca = f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'
-                list_ids = search_message(service, 'me', busca)
-                quantidadeEmailAtual = 0
-                for ids in list_ids:
-                    quantidadeEmailAtual += 1
-                (f'Qtd Email: {quantidadeEmailAtual} qtdEmailAt()')
-                if quantidadeEmailAtual > 0:
-                    todayPix()
-                
-                threading.Timer(5.0, qtdEmailAt).start()
+            try:
+                if runThread == 1:
+                    service = get_service()
+                    list_ids = []
+                    busca = f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'
+                    list_ids = search_message(service, 'me', busca)
+                    quantidadeEmailAtual = 0
+                    for ids in list_ids:
+                        quantidadeEmailAtual += 1
+                    (f'Qtd Email: {quantidadeEmailAtual} qtdEmailAt()')
+                    if quantidadeEmailAtual > 0:
+                        todayPix()
+
+                    threading.Timer(5.0, qtdEmailAt).start()
+
+            except Exception as e:
+                messagebox.showerror("Erro na busca", "Erro ao tentar procurar novos e-mails.\nContate o Administrador")
+                exit()
+
 
         def todayPix():
             i = 0
@@ -154,7 +161,7 @@ class App(customtkinter.CTk):
                     lengthDia = 2
                 add_pix("pixchecker", storeName, [nomesobrenome, valor])
                 pixadd = f"Pix adicionado {[nomesobrenome, valor]}"
-                logging.info(pixadd)
+                logging.warning(pixadd)
                 clean_soup.clear()
                 email.clear()
                 i += 1
@@ -164,24 +171,32 @@ class App(customtkinter.CTk):
         def table_insert_daily():
             global count
             global total_valor
-            if count > 0:
-                count = 0
-            result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno)
-            pixTable.delete(*pixTable.get_children())
-            pixTable.update()
-            total_valor = 0.0
-            if result:
-                for data in result:
-                    pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], f'R$ {data["valor"]}'))
+            try:
+                if count > 0:
+                    count = 0
+                result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno)
+                pixTable.delete(*pixTable.get_children())
+                pixTable.update()
+                total_valor = 0.0
+                pix_list = []
+                if result:
+                    for data in result:
+                        pix_list.append(data)
+
+                for pix in pix_list:
+                    pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, pix['nome'], f'R$ {pix["valor"]}'))
                     count += 1
-                    valor = float(data['valor'].replace('.', '').replace(',', '.')) # Converte o valor para float removendo os pontos de separação de milhar e substituindo a vírgula por ponto
+                    valor = float(pix['valor'].replace('.', '').replace(',', '.'))
                     total_valor += valor
 
-            # Após o loop, exiba o valor total ao lado do botão "Fechar"
-            valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")
-            valor_total_label.configure(font=('Courier New', 16, 'bold'))
-            valor_total_label.grid(row=8, column=0, pady=10, padx=20)
-            playsound('assets/shineupdate.mp3')
+                # Após o loop, exiba o valor total ao lado do botão "Fechar"
+                valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")
+                valor_total_label.configure(font=('Courier New', 16, 'bold'))
+                valor_total_label.grid(row=8, column=0, pady=10, padx=20)
+                playsound('assets/shineupdate.mp3')
+            except Exception as e:
+                messagebox.showerror("Erro na atualização", "Erro ao tentar retornar os PIXs do dia.\nContate o Administrador")
+                exit()
 
         
 

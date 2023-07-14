@@ -1,17 +1,15 @@
+from tkinter import messagebox
 from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
-from pymongo.errors import CollectionInvalid
+from pymongo.errors import CollectionInvalid, OperationFailure
 from datetime import datetime, date
 import logging
 from GmailHandler import deleteEmail
 import json
-logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
+logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.WARNING)
 file_path = 'config.json'
 
-class AlreadyInDB(Exception):
-    """Raised when pix is already stored in DB"""
-    pass
 
 def read_config(file_path):
     with open(file_path, 'r') as file:
@@ -20,13 +18,17 @@ def read_config(file_path):
 
 config = read_config('config.json')
 
-def connect(
-    username: str(config['username']),
-    password: str(config['password']),
-    database: str(config['database']),
-    cluster= config['cluster']) -> Database:
-    client = MongoClient(f'mongodb+srv://{username}:{password}@{cluster}/?retryWrites=true&w=majority')
-    return client[database]
+def connect(user, passw, db):
+    try:
+        username = str(user)
+        password = str(passw)
+        database = str(db)
+        cluster = config['cluster']
+        client = MongoClient(f'mongodb+srv://{username}:{password}@{cluster}/?retryWrites=true&w=majority')
+        return client[database]
+    except:
+            logging.error("Authentication failed. Please check your credentials.")
+
 
 def create_collection(db: Database, collection_name:str) -> Collection:
     try: 
@@ -71,7 +73,9 @@ def return_pix_daily(db: Database, collection_name:str, dia:int, mes:str, ano:in
         result = db[collection_name].find(filter=filter)
         return result
     except:
+        messagebox.showerror("Erro na atualização", "Erro ao tentar retornar os PIXs do dia.")
         logging.error("Erro ao tentar retornar os PIXs do dia - " + str(datetime.now()))
+        exit()
 
 def return_pix_month(db: Database, collection_name:str, mes:str):
     try:
@@ -106,33 +110,39 @@ def return_qtd_docs(db: Database, collection_name:str):
         logging.error("Erro em recuperar quantidade de documentos")
     return qtd
 
-def add_pix(db: Database, collection_name:str, allPix: list):
+def add_pix(db: Database, collection_name: str, allPix: list):
     db = connect(config['username'], config['password'], 'pixchecker')
     coll = db[collection_name]
     now = datetime.now()
     todays_date = date.today()
     current_year = int(todays_date.year)
-    i = 0
     try:
-        for pix in allPix:
-            mydict = { "nome": allPix[0], "valor": allPix[1], "dia": todays_date.day,  "mes": todays_date.month, "ano": current_year, "horario": now}
-            filter={
-                'nome': allPix[0],
-                'valor': allPix[1],
-                'dia': todays_date.day,
-                'mes': todays_date.month,
-                'ano': current_year
-            }
-
-            result = list(db[collection_name].find(filter=filter))
-            if result:
-                raise AlreadyInDB
+        nome = allPix[0]
+        valor = allPix[1]
+        existing_pix = coll.find_one({"nome": nome, "valor": valor})
+        
+        if existing_pix:
+            existing_horario = existing_pix.get("horario")
+            # Comparar o horário existente com o horário atual com uma margem de 1 minuto
+            if (now - existing_horario).total_seconds() > 60:
+                mydict = {"nome": nome, "valor": valor, "dia": todays_date.day, "mes": todays_date.month, "ano": current_year, "horario": now}
+                try:
+                    coll.insert_one(mydict)
+                except:
+                    logging.error(f"Erro ao inserir no banco.")
+            else:
+                messagebox.WARNING (("Aviso",f"O PIX com nome '{nome}' e valor '{valor}' já existe no banco de dados com horário próximo."))
+                logging.warning(f"O PIX com nome '{nome}' e valor '{valor}' já existe no banco de dados com horário próximo.")
+        else:
+            mydict = {"nome": nome, "valor": valor, "dia": todays_date.day, "mes": todays_date.month, "ano": current_year, "horario": now}
             try:
-                pix = coll.insert_one(mydict)
+                coll.insert_one(mydict)
             except:
+                messagebox.showerror("Erro ao inserir no banco", "Erro ao tentar adicionar novo pix no banco.")
                 logging.error(f"Erro ao inserir no banco.")
-            i += 1
+    
         deleteEmail()
-    except AlreadyInDB:
-        deleteEmail()
+    
+    except:
+        messagebox.showerror("Erro add_pix", "Erro ao tentar adicionar novo pix no banco.")
         return

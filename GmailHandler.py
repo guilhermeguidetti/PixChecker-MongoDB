@@ -1,5 +1,6 @@
 import email
 from email.mime.text import MIMEText
+import logging
 import os.path
 import socket
 import tkinter
@@ -14,10 +15,6 @@ import base64
 import httplib2
 import os
 import datetime 
-import logging
-
-logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
-
 SCOPES = ['https://mail.google.com/']
 
 current_time = datetime.datetime.now() 
@@ -170,7 +167,7 @@ def get_service():
                         os.remove("tokens/token.json")
                         exit()
                 except:
-                    logging.info(f"{datetime.date} Token expirado")
+                    logging.ERROR(f"{datetime.date} Token expirado")
                     exit()
         else:
             flow = InstalledAppFlow.from_client_secrets_file(

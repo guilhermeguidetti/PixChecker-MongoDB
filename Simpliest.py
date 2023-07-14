@@ -10,9 +10,16 @@ from bs4 import BeautifulSoup
 import re
 import datetime 
 from playsound import playsound
-from tkinter import *
 import logging
+<<<<<<< Updated upstream
 logging.basicConfig(filename='pixlogs.log', encoding='utf-8')
+=======
+import pystray
+from PIL import Image
+import pygetwindow as gw
+
+logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.WARNING)
+>>>>>>> Stashed changes
 
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -28,7 +35,11 @@ class App(customtkinter.CTk):
         self.title(storeName)
         self.iconbitmap("assets/unlock_pix.ico")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
+<<<<<<< Updated upstream
         #self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
+=======
+        self.protocol("WM_DELETE_WINDOW", self.on_closing) # Intercepta o evento de fechar a janela
+>>>>>>> Stashed changes
         menubar = tkinter.Menu(self)
         self.config(menu=menubar)
 
@@ -77,7 +88,7 @@ class App(customtkinter.CTk):
 
 
 
-        self.bind('<Escape>', lambda e: self.destroy())
+        self.bind('<Escape>', lambda e: self.iconify()) # Minimiza a janela ao pressionar Esc
 
         # ============ Inicializando variáveis ===========
         
@@ -177,13 +188,26 @@ class App(customtkinter.CTk):
                     valor = float(data['valor'].replace('.', '').replace(',', '.')) # Converte o valor para float removendo os pontos de separação de milhar e substituindo a vírgula por ponto
                     total_valor += valor
 
+<<<<<<< Updated upstream
             # Após o loop, exiba o valor total ao lado do botão "Fechar"
             valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")
             valor_total_label.configure(font=('Courier New', 16, 'bold'))
             valor_total_label.grid(row=8, column=0, pady=10, padx=20)
             playsound('assets/shineupdate.mp3')
+=======
+                # Após o loop, exiba o valor total ao lado do botão "Fechar"
+                valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")
+                valor_total_label.configure(font=('Courier New', 16, 'bold'))
+                valor_total_label.grid(row=8, column=0, pady=10, padx=20)
+                playsound('assets/shineupdate.mp3')
 
-        
+                # Abrir a janela quando a função for chamada
+                self.deiconify()
+
+            except Exception as e:
+                messagebox.showerror("Erro na atualização", "Erro ao tentar retornar os PIXs do dia.\nContate o Administrador")
+                exit()
+>>>>>>> Stashed changes
 
         def startThread():
             global runThread
@@ -219,6 +243,31 @@ class App(customtkinter.CTk):
         send_email_button = customtkinter.CTkButton(master=self.frame_right, text="Enviar por e-mail", command=send_email)
         send_email_button.grid(row=8, column=0, pady=10, padx=20, sticky="e")
 
+        self.create_system_tray_icon()  # Cria o ícone da bandeja do sistema
+
+    def on_closing(self):
+        self.withdraw()  # Oculta a janela ao ser fechada
+        return True
+
+    def create_system_tray_icon(self):
+        image = Image.open("assets/unlock_pix.ico")
+
+        def toggle_window(icon, item):
+            if self.winfo_viewable():
+                self.withdraw()
+            else:
+                # Encontrar a janela existente e maximizá-la
+                hwnd = gw.getWindowsWithTitle(storeName)[0].hwnd
+                gw.Window(hwnd).maximize()
+
+        menu = (pystray.MenuItem("Abrir", toggle_window), pystray.MenuItem("Sair", self.quit))
+        tray_icon = pystray.Icon("PixApp", image, "PixApp", menu)
+
+        def tray_thread():
+            tray_icon.run()
+
+        # Executa o loop de eventos da bandeja do sistema em uma thread separada
+        threading.Thread(target=tray_thread, daemon=True).start()
 
 def check_internet_connection():
     try:
@@ -228,14 +277,22 @@ def check_internet_connection():
         return False
     
 if __name__ == "__main__":
-    if check_internet_connection(): 
+    if check_internet_connection():
         global storeName
         def getStoreName():
             with open('credentials/storename.txt') as f:
                 loja = f.readlines()
                 return loja[0]
+        
         storeName = getStoreName()
-        app = App()
-        app.mainloop()
+
+        # Verificar se uma instância já está em execução
+        existing_window = gw.getWindowsWithTitle(storeName)
+        if existing_window:
+            # Maximizar a janela existente
+            existing_window[0].maximize()
+        else:
+            app = App()
+            app.mainloop()
     else:
         messagebox.showerror("Erro de conexão", "Não foi possível conectar à Internet. Verifique sua conexão e tente novamente.")

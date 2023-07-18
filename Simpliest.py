@@ -1,5 +1,7 @@
+import platform
 import socket
 import threading
+import os
 from tkinter import CENTER, NO, messagebox, ttk
 import tkinter
 from GmailHandler import create_message, get_message, get_service, search_message, send_message
@@ -8,15 +10,15 @@ import customtkinter
 import html2text
 from bs4 import BeautifulSoup
 import re
-import datetime 
+import datetime
 from playsound import playsound
 import logging
 import pystray
 from PIL import Image
 import pygetwindow as gw
-
+import sys
 logging.basicConfig(filename='pixlogs.log', encoding='utf-8', level=logging.WARNING)
-
+APP_LOCK_FILE = "app.lock"
 customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
@@ -27,13 +29,17 @@ class App(customtkinter.CTk):
 
     def __init__(self):
         super().__init__()
-                
+
         self.title(storeName)
         self.iconbitmap("assets/unlock_pix.ico")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
         self.protocol("WM_DELETE_WINDOW", self.on_closing) # Intercepta o evento de fechar a janela
         menubar = tkinter.Menu(self)
         self.config(menu=menubar)
+        # Verificar se o programa foi executado a partir do arquivo .exe
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            # O programa foi executado a partir do arquivo .exe
+            self.maximize_window()
 
         # ============ create two frames ============
 
@@ -112,21 +118,28 @@ class App(customtkinter.CTk):
 
         # ======== Funções =========
 
+
         def qtdEmailAt():
             global quantidadeEmailAtual
-            if runThread == 1:
-                service = get_service()
-                list_ids = []
-                busca = f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'
-                list_ids = search_message(service, 'me', busca)
-                quantidadeEmailAtual = 0
-                for ids in list_ids:
-                    quantidadeEmailAtual += 1
-                (f'Qtd Email: {quantidadeEmailAtual} qtdEmailAt()')
-                if quantidadeEmailAtual > 0:
-                    todayPix()
-                
-                threading.Timer(5.0, qtdEmailAt).start()
+            try:
+                if runThread == 1:
+                    service = get_service()
+                    list_ids = []
+                    busca = f'from:todomundo@nubank.com.br recebeu transferência after:{buscaAno}/{buscaMes}/{buscaDia}'
+                    list_ids = search_message(service, 'me', busca)
+                    quantidadeEmailAtual = 0
+                    for ids in list_ids:
+                        quantidadeEmailAtual += 1
+                    (f'Qtd Email: {quantidadeEmailAtual} qtdEmailAt()')
+                    if quantidadeEmailAtual > 0:
+                        todayPix()
+
+                    threading.Timer(5.0, qtdEmailAt).start()
+
+            except Exception as e:
+                messagebox.showerror("Erro na busca", "Erro ao tentar procurar novos e-mails.\nContate o Administrador")
+                exit()
+
 
         def todayPix():
             i = 0
@@ -157,7 +170,7 @@ class App(customtkinter.CTk):
                     lengthDia = 2
                 add_pix("pixchecker", storeName, [nomesobrenome, valor])
                 pixadd = f"Pix adicionado {[nomesobrenome, valor]}"
-                logging.info(pixadd)
+                logging.warning(pixadd)
                 clean_soup.clear()
                 email.clear()
                 i += 1
@@ -167,27 +180,44 @@ class App(customtkinter.CTk):
         def table_insert_daily():
             global count
             global total_valor
-            if count > 0:
-                count = 0
-            result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno)
-            pixTable.delete(*pixTable.get_children())
-            pixTable.update()
-            total_valor = 0.0
-            if result:
-                for data in result:
-                    pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, data['nome'], f'R$ {data["valor"]}'))
+            try:
+                if count > 0:
+                    count = 0
+                result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno)
+                pixTable.delete(*pixTable.get_children())
+                pixTable.update()
+                total_valor = 0.0
+                pix_list = []
+                if result:
+                    for data in result:
+                        pix_list.append(data)
+
+                for pix in pix_list:
+                    pixTable.insert(parent='', index='end', iid=f'{count + 1}', values=(count+1, pix['nome'], f'R$ {pix["valor"]}'))
                     count += 1
-                    valor = float(data['valor'].replace('.', '').replace(',', '.')) # Converte o valor para float removendo os pontos de separação de milhar e substituindo a vírgula por ponto
+                    valor = float(pix['valor'].replace('.', '').replace(',', '.'))
                     total_valor += valor
 
                 # Após o loop, exiba o valor total ao lado do botão "Fechar"
                 valor_total_label = customtkinter.CTkLabel(master=self.frame_right, text=f"Valor Total: R$ {total_valor:.2f}")
                 valor_total_label.configure(font=('Courier New', 16, 'bold'))
                 valor_total_label.grid(row=8, column=0, pady=10, padx=20)
+                maximize_window(self)
                 playsound('assets/shineupdate.mp3')
 
                 # Abrir a janela quando a função for chamada
                 self.deiconify()
+
+            except Exception as e:
+                messagebox.showerror("Erro na atualização", "Erro ao tentar retornar os PIXs do dia.\nContate o Administrador")
+                exit()
+                
+        def maximize_window(self):
+            self.deiconify()
+            if platform.system() == "Windows":
+                self.state("zoomed")
+            else:
+                self.attributes("-zoomed", True)
 
         def startThread():
             global runThread
@@ -228,19 +258,32 @@ class App(customtkinter.CTk):
     def on_closing(self):
         self.withdraw()  # Oculta a janela ao ser fechada
         return True
+    
+    def maximize_window(self):
+        self.deiconify()
+        if platform.system() == "Windows":
+            self.state("zoomed")
+        else:
+            self.attributes("-zoomed", True)
 
     def create_system_tray_icon(self):
         image = Image.open("assets/unlock_pix.ico")
 
         def toggle_window(icon, item):
-            if self.winfo_viewable():
-                self.withdraw()
-            else:
-                # Encontrar a janela existente e maximizá-la
-                hwnd = gw.getWindowsWithTitle(storeName)[0].hwnd
-                gw.Window(hwnd).maximize()
+            self.maximize_window()  # Maximiza a janela existente
 
-        menu = (pystray.MenuItem("Abrir", toggle_window), pystray.MenuItem("Sair", self.quit))
+        def maximize_window(self):
+            self.deiconify()
+            if platform.system() == "Windows":
+                self.state("zoomed")
+            else:
+                self.attributes("-zoomed", True)
+
+        menu = (
+            pystray.MenuItem("Abrir", toggle_window),
+            pystray.MenuItem("Maximizar", maximize_window),
+            pystray.MenuItem("Sair", self.quit)
+        )
         tray_icon = pystray.Icon("PixApp", image, "PixApp", menu)
 
         def tray_thread():
@@ -256,23 +299,34 @@ def check_internet_connection():
     except OSError:
         return False
     
+
 if __name__ == "__main__":
     if check_internet_connection():
         global storeName
+
         def getStoreName():
             with open('credentials/storename.txt') as f:
                 loja = f.readlines()
                 return loja[0]
-        
+
         storeName = getStoreName()
 
-        # Verificar se uma instância já está em execução
-        existing_window = gw.getWindowsWithTitle(storeName)
-        if existing_window:
+        # Verificar se o arquivo de bloqueio existe
+        if os.path.exists(APP_LOCK_FILE):
             # Maximizar a janela existente
-            existing_window[0].maximize()
+            existing_window = gw.getWindowsWithTitle(storeName)
+            if existing_window:
+                existing_window[0].maximize()
         else:
+            # Criar o arquivo de bloqueio
+            with open(APP_LOCK_FILE, "w") as lock_file:
+                lock_file.write("")
+
             app = App()
             app.mainloop()
+
+        # Remover o arquivo de bloqueio ao encerrar o aplicativo
+        if os.path.exists(APP_LOCK_FILE):
+            os.remove(APP_LOCK_FILE)
     else:
         messagebox.showerror("Erro de conexão", "Não foi possível conectar à Internet. Verifique sua conexão e tente novamente.")

@@ -1,5 +1,6 @@
 import email
 from email.mime.text import MIMEText
+import json
 import logging
 import os.path
 import socket
@@ -14,13 +15,48 @@ from google.auth.exceptions import RefreshError
 import base64
 import httplib2
 import os
-import datetime 
+import datetime
+import psutil
 SCOPES = ['https://mail.google.com/']
+
+def find_process_by_port(port):
+    for proc in psutil.process_iter(['pid', 'name']):
+        try:
+            connections = proc.connections()
+            for conn in connections:
+                if conn.status == psutil.CONN_LISTEN and conn.laddr.port == port:
+                    return proc
+        except (psutil.AccessDenied, psutil.NoSuchProcess):
+            continue
+    return None
+
+def terminate_process_by_port(port):
+    process = find_process_by_port(port)
+    if process:
+        try:
+            process.terminate()
+            print(f"Processo {process.info['pid']} encerrado.")
+        except psutil.NoSuchProcess:
+            print("Processo não encontrado.")
+        except psutil.AccessDenied:
+            print("Acesso negado para encerrar o processo.")
+    else:
+        print("Nenhum processo encontrado usando a porta.")
+
+# Defina a porta que deseja liberar
+port_to_free = 65535
+
 
 current_time = datetime.datetime.now() 
 buscaAno = (current_time.year)
 buscaMes = (current_time.month)
 buscaDia = (current_time.day)
+file_path = 'config.json'
+def read_config(file_path):
+    with open(file_path, 'r') as file:
+        config = json.load(file)
+    config = read_config('config.json')
+    return config
 
 def create_message(sender, to, subject, message_text):
     message = MIMEText(message_text)
@@ -42,6 +78,11 @@ def send_message(service, user_id, message):
     except Exception as error:
         messagebox.showerror("Erro ao enviar e-mail", str(error))
 
+def send_bug_email(erro):
+    config = read_config('config.json')
+    body = f'Ocorre um erro no programa no nome de {config["storeName"]}, esse foi o log:\n\n{erro}'
+    message = create_message('me', 'gzguidetti@gmail.com', f'{config["storeName"]} - ERRO PIX {buscaDia}/{buscaMes}/{buscaAno}', body)
+    send_message(service=get_service(), user_id='me', message=message)
 
 def get_message(service, user_id, msg_id):
     """
@@ -115,7 +156,7 @@ def search_message(service, user_id, search_string):
             search_ids = service.users().messages().list(userId=user_id, q=search_string).execute()
         except:
             tkinter.messagebox.showerror(title='Busca Pix', message='Erro de conexão')
-            return ""
+            quit()
             
         
         # if there were no results, print warning and return empty string
@@ -165,14 +206,23 @@ def get_service():
                 try: 
                     if os.path.exists('tokens/token.json'):
                         os.remove("tokens/token.json")
-                        exit()
+                        quit()
                 except:
                     logging.ERROR(f"{datetime.date} Token expirado")
-                    exit()
+                    quit()
         else:
+            tkinter.messagebox.showinfo(title='Faça o login', message='É importante realizar o login no e-mail designado para receber as informações das transações via Pix. 🚀')
             flow = InstalledAppFlow.from_client_secrets_file(
                 'credentials/credentials.json', SCOPES)
-            creds = flow.run_local_server(port=65535)
+            try:
+                creds = flow.run_local_server(port=65535)
+            except Exception as e:
+                logging.error(f'An error occurred: port_in_use')
+                terminate_process_by_port(port_to_free)
+                tkinter.messagebox.showerror(title='Erro ao iniciar', message='Tente abrir o programa novamente!')
+                quit()
+
+
         # Save the credentials for the next run
         with open('tokens/token.json', 'w') as token:
             token.write(creds.to_json())

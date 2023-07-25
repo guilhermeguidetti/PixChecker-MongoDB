@@ -1,3 +1,4 @@
+import json
 import socket
 import threading
 from tkinter import CENTER, NO, messagebox, ttk
@@ -25,7 +26,7 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title(storeName)
+        self.title(config['storeName'])
         self.iconbitmap("assets/unlock_pix.ico")
         self.geometry(f"{App.WIDTH}x{App.HEIGHT}")
         # self.protocol("WM_DELETE_WINDOW", self.iconify) # call .on_closing() when app gets closed
@@ -129,7 +130,7 @@ class App(customtkinter.CTk):
 
             except Exception as e:
                 messagebox.showerror("Erro na busca", "Erro ao tentar procurar novos e-mails.\nContate o Administrador")
-                exit()
+                quit()
 
 
         def todayPix():
@@ -159,7 +160,7 @@ class App(customtkinter.CTk):
                 valor = match2.group(1) if match2 and match2.group(1) else match2.group(2) if match2 and match2.group(2) else 'VER NO APP'
                 if(len(str(buscaDia)) < 10):
                     lengthDia = 2
-                add_pix("pixchecker", storeName, [nomesobrenome, valor])
+                add_pix("pixchecker", config['storeName'], [nomesobrenome, valor])
                 pixadd = f"Pix adicionado {[nomesobrenome, valor]}"
                 logging.warning(pixadd)
                 clean_soup.clear()
@@ -174,7 +175,7 @@ class App(customtkinter.CTk):
             try:
                 if count > 0:
                     count = 0
-                result = return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno)
+                result = return_pix_daily("pixchecker", config['storeName'], buscaDia, buscaMes, buscaAno)
                 pixTable.delete(*pixTable.get_children())
                 pixTable.update()
                 total_valor = 0.0
@@ -196,7 +197,7 @@ class App(customtkinter.CTk):
                 playsound('assets/shineupdate.mp3')
             except Exception as e:
                 messagebox.showerror("Erro na atualização", "Erro ao tentar retornar os PIXs do dia.\nContate o Administrador")
-                exit()
+                quit()
 
         
 
@@ -224,11 +225,16 @@ class App(customtkinter.CTk):
 
         def send_email():
             body = f'O valor total de PIXs recebido hoje foi de: R$ {total_valor:.2f}\n\nDetalhes dos PIXs:\n'
-            for data in return_pix_daily("pixchecker", storeName, buscaDia, buscaMes, buscaAno):
+            for data in return_pix_daily("pixchecker", config['storeName'], buscaDia, buscaMes, buscaAno):
                 nome = data['nome']
                 valor = data['valor']
                 body += f'Nome: {nome}\nValor: R$ {valor}\n\n'
             message = create_message('me', 'gzguidetti@gmail.com', f'PIX {buscaDia}/{buscaMes}/{buscaAno}', body)
+            send_message(service=get_service(), user_id='me', message=message)
+
+        def send_bug_email(erro):
+            body = f'Ocorre um erro no programa no nome de {config["storeName"]}, esse foi o log:\n{erro}'
+            message = create_message('me', 'gzguidetti@gmail.com', f'{config["storeName"]} - ERRO PIX {buscaDia}/{buscaMes}/{buscaAno}', body)
             send_message(service=get_service(), user_id='me', message=message)
 
         send_email_button = customtkinter.CTkButton(master=self.frame_right, text="Enviar por e-mail", command=send_email)
@@ -241,15 +247,17 @@ def check_internet_connection():
         return True
     except OSError:
         return False
-    
+
+
+file_path = 'config.json'
+def read_config(file_path):
+    with open(file_path, 'r') as file:
+        config = json.load(file)
+    return config
+
 if __name__ == "__main__":
-    if check_internet_connection(): 
-        global storeName
-        def getStoreName():
-            with open('credentials/storename.txt') as f:
-                loja = f.readlines()
-                return loja[0]
-        storeName = getStoreName()
+    if check_internet_connection():
+        config = read_config('config.json')
         app = App()
         app.mainloop()
     else:

@@ -12,8 +12,12 @@ file_path = 'config.json'
 
 
 def read_config(file_path):
-    with open(file_path, 'r') as file:
-        config = json.load(file)
+    try:
+        with open(file_path, 'r') as file:
+            config = json.load(file)
+    except:
+        messagebox.showerror("Arquivo de configuração", "Config.json não foi encontrado.")
+        quit()
     return config
 
 config = read_config('config.json')
@@ -75,7 +79,7 @@ def return_pix_daily(db: Database, collection_name:str, dia:int, mes:str, ano:in
     except:
         messagebox.showerror("Erro na atualização", "Erro ao tentar retornar os PIXs do dia.")
         logging.error("Erro ao tentar retornar os PIXs do dia - " + str(datetime.now()))
-        exit()
+        quit()
 
 def return_pix_month(db: Database, collection_name:str, mes:str):
     try:

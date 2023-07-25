@@ -248,17 +248,42 @@ def check_internet_connection():
     except OSError:
         return False
 
+def check_license():
+    import pymongo
+
+    def verificar_licenca(chave):
+        filtro = {"key": chave}
+        licenca = collection.find_one(filtro)
+        if licenca and licenca["data_expiracao"] > datetime.datetime.utcnow():
+            return True
+        return False
+
+    # Configurações do banco de dados
+    mongo_client = pymongo.MongoClient(f"mongodb+srv://{config['username']}:{config['password']}@{config['cluster']}/{config['database']}?retryWrites=true&w=majority")
+    db = mongo_client[config["licensesDatabase"]]
+    collection = db[config["storeName"]]
+
+    licenca_input = config["license"]
+    try:
+        if verificar_licenca(licenca_input):
+            return True
+        return False
+    except:
+        messagebox.showerror("Verificação de licença", "Ocorreu algum erro durante a verificação da licença.")
 
 file_path = 'config.json'
 def read_config(file_path):
     with open(file_path, 'r') as file:
         config = json.load(file)
     return config
+config = read_config('config.json')
 
 if __name__ == "__main__":
     if check_internet_connection():
-        config = read_config('config.json')
-        app = App()
-        app.mainloop()
+        if check_license():
+            app = App()
+            app.mainloop()
+        else:
+            messagebox.showwarning("Licença inválida", "Contate o administrador, a licença está expirada ou é inválida.")
     else:
         messagebox.showerror("Erro de conexão", "Não foi possível conectar à Internet. Verifique sua conexão e tente novamente.")

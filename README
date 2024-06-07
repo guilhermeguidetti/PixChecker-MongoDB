@@ -16,10 +16,6 @@ Relatório Técnico
 
 O código é um programa de interface gráfica construído em Python com a biblioteca Tkinter. O objetivo do programa é buscar e exibir informações sobre transações realizadas por meio do sistema de pagamentos instantâneos PIX.
 
-O programa é iniciado com a criação da classe "App", que herda da classe "CTk" da biblioteca customtkinter. Na sequência, são definidos parâmetros iniciais da interface, tais como título da janela, tamanho, ícone e eventos para o botão de fechar.
-
-A classe "App" possui dois frames, o "frame_right" e o "pixTable", que são configurados com tamanhos e posicionamentos específicos. O "frame_right" é dividido em uma grade de 3 colunas e 7 linhas e contém diversos elementos de interface gráfica, tais como rótulos, botões e caixas de texto.
-
 A tabela "pixTable" é criada com o uso da classe Treeview da biblioteca ttk. Ela possui 3 colunas para exibição das informações sobre os PIXs: "pixID", "pixNome" e "pixValor". Os dados que preenchem a tabela são buscados em uma base de dados MongoDB por meio de funções definidas na biblioteca "MongoHandler".
 
 O programa também possui outras bibliotecas importadas, tais como "GmailHandler", "html2text", "BeautifulSoup", "datetime", "playsound" e "logging". A primeira é responsável pela conexão com o Gmail para busca de informações sobre as transações PIX. A segunda é utilizada para converter o conteúdo HTML dos e-mails para texto puro. A terceira é utilizada para extrair informações específicas do conteúdo HTML, enquanto a quarta é utilizada para obter informações de data e hora. A quinta é utilizada para reproduzir um som sempre que há uma nova transação PIX e a última é utilizada para criar um arquivo de log do programa.
